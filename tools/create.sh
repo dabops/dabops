@@ -132,4 +132,4 @@ describe('Array', function() {
 
 npm test
 
-
+echo "$nameOfTheProject" >> ../../repositories.txt
