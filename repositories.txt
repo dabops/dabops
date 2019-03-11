@@ -1,0 +1,4 @@
+thermometer
+clock
+tictactoe
+mocaccino
