@@ -1,10 +1,12 @@
 #!/bin/bash
 
+BASEDIR=$(dirname "$0")
+cd $BASEDIR
+
 pathfile="../repositories.txt"
 repositories=()
 
 cd ../microservices
-
 while read REPO
 do
   if [ -d $REPO ]
