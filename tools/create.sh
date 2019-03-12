@@ -1,19 +1,79 @@
 #!/bin/bash
 # Simple script that generate a Node.js microservice
 # You must specify the complete url of the git repository and the name of your project
+BASEDIR=$(dirname "$0")
+cd microservices
+status=0
+printf "Name of the repository: ";
+read repository;
+repository=$(echo "$repository" | tr '[:upper:]' '[:lower:]')
 
-git=$1
-nameOfTheProject=$2
-circleCiPath=".circleci/"
-circleCiConfig="$circleCiPath/config.yml"
+# GIT
+git="https://github.com/dabops/$repository.git"
+git clone "$git";
+if [ $? != 0 ]; then
+  echo "It seems that an error happened while bringing the git repository";
+  exit 1;
+fi;
 
-defaultTemplateCI="# Javascript Node CircleCI 2.0 configuration file
+cd "$repository"
+
+# Npm
+echo "{
+  \"name\": \"$repository\",
+  \"version\": \"1.0.0\",
+  \"description\": \"[![CircleCI](https://circleci.com/gh/dabops/$repository.svg?style=svg)](https://circleci.com/gh/dabops/$repository)\",
+  \"main\": \"index.js\",
+  \"scripts\": {
+    \"test\": \"mocha\"
+  },
+  \"repository\": {
+    \"type\": \"git\",
+    \"url\": \"git+$git\"
+  },
+  \"author\": \"\",
+  \"license\": \"ISC\",
+  \"bugs\": {
+    \"url\": \"${git::-4}/issues\"
+  },
+  \"homepage\": \"${git::-4}#readme\",
+  \"dependencies\": {
+    \"mocha\": \"^6.0.2\"
+  }
+}" >> package.json
+
+npm install
+if [ $? != 0 ]; then
+  echo "It seems that an error happened while installing the npm dependencies";
+  cd .. && rm -rf "$repository"
+  exit 1;
+fi;
+
+touch index.js
+# Tests
+mkdir test
+echo "var assert = require('assert');
+describe('Array', function() {
+  describe('#indexOf()', function() {
+    it('should return -1 when the value is not present', function() {
+      assert.equal([1, 2, 3].indexOf(4), -1);
+    });
+  });
+});
+" >> "test/test.js"
+
+npm test
+
+# CircleCI
+mkdir .circleci
+
+echo "# Javascript Node CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
 jobs:
-  $nameOfTheProject:
+  $repository:
     docker:
       # User of the circleci official node version 9.2
       - image: circleci/node:9.2
@@ -44,10 +104,10 @@ workflows:
   version: 2
   tagged-build:
     jobs:
-      - $nameOfTheProject
-"
-
-dockerFile="# Pull an LTS Alpine linux (~5MB) environment with
+      - $repository
+" >> .circleci/config.yml
+# Docker
+echo "# Pull an LTS Alpine linux (~5MB) environment with
 # Node already install on it.
 FROM node:lts-alpine
 
@@ -78,58 +138,6 @@ EXPOSE 80
 
 # We specify how we start our application
 # CF package.json
-CMD [ \"npm\", \"start\" ]
-"
+CMD [ \"npm\", \"start\" ]" >> "Dockerfile"
 
-npmInit="{
-  \"name\": \"$nameOfTheProject\",
-  \"version\": \"1.0.0\",
-  \"description\": \"[![CircleCI](https://circleci.com/gh/dabops/$nameOfTheProject.svg?style=svg)](https://circleci.com/gh/dabops/$nameOfTheProject)\",
-  \"main\": \"index.js\",
-  \"scripts\": {
-    \"test\": \"mocha\"
-  },
-  \"repository\": {
-    \"type\": \"git\",
-    \"url\": \"git+$git\"
-  },
-  \"author\": \"\",
-  \"license\": \"ISC\",
-  \"bugs\": {
-    \"url\": \"${git::-4}/issues\"
-  },
-  \"homepage\": \"${git::-4}#readme\",
-  \"dependencies\": {
-    \"mocha\": \"^6.0.2\"
-  }
-}"
-
-cd microservices
-mkdir "$nameOfTheProject"
-cd "$nameOfTheProject"
-git clone "$git"
-mkdir "$circleCiPath"
-
-echo "$defaultTemplateCI" >> "$circleCiConfig"
-echo "$dockerFile" >> "Dockerfile"
-
-echo "$npmInit" >> "package.json"
-npm install
-
-
-touch "index.js"
-
-mkdir test
-echo "var assert = require('assert');
-describe('Array', function() {
-  describe('#indexOf()', function() {
-    it('should return -1 when the value is not present', function() {
-      assert.equal([1, 2, 3].indexOf(4), -1);
-    });
-  });
-});
-" >> "test/test.js"
-
-npm test
-
-echo "$nameOfTheProject" >> ../../repositories.txt
+echo "$repository" >> ../../repositories.txt
