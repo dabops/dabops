@@ -13,6 +13,7 @@ do
     then
       cd $REPO
       git pull origin master
+
       # IF WIKI repot exists
       if [ -d "wiki" ]
           then
