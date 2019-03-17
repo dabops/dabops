@@ -2,10 +2,9 @@
 
 BASEDIR=$(dirname "$0")
 cd $BASEDIR
-echo $BASEDIR
-
 pathfile="../repositories.txt"
 
+mkdir ../microservices
 cd ../microservices
 
 ## FUNCTIONS ##
