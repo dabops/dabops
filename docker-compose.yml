@@ -1,0 +1,47 @@
+version: "3"
+services:
+  reverse-proxy:
+    image: traefik # The official Traefik docker image
+    command: --api --docker # Enables the web UI and tells Traefik to listen to docker
+    ports:
+      - "80:80"     # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+
+  mocaccino:
+    build:
+      "./microservices/mocaccino"
+    labels:
+      - "traefik.frontend.rule=Host:mocaccino.docker.localhost"
+    environment:
+      - "HOST=0.0.0.0"
+      - "PORT=80"
+      - "BASE_URL=expresso.docker.localhost"
+
+  expresso:
+    build:
+      "./microservices/expresso"
+    labels:
+      - "traefik.frontend.rule=Host:expresso.docker.localhost"
+    env_file: ./microservices/expresso/.env
+    environment:
+      - 'DB_HOST=mysql'
+    depends_on:
+      - mysql
+
+  mysql:
+    image: 'mysql:5.7'
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=tictactoe
+      - MYSQL_USER=bigbig
+      - MYSQL_PASSWORD=BigLenbo
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+
+volumes:
+  mysql-data:
+
