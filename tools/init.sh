@@ -3,6 +3,8 @@
 # set the hookPath
 git config core.hooksPath hooks/
 
+npm install
+
 BASEDIR=$(dirname "$0")
 cd $BASEDIR
 pathfile="../repositories.txt"
