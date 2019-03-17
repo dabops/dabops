@@ -1,5 +1,5 @@
 robin.baillargeaux\
 rubie.de-oliveira\
 romain.sauvaire-dassac\
-alan.thorigny
+alan.thorigny\
 fabio.rocco
