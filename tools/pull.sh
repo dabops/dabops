@@ -4,7 +4,10 @@ BASEDIR=$(dirname "$0")
 cd $BASEDIR
 pathfile="../repositories.txt"
 
-mkdir ../microservices
+if [ ! -d "../microservices" ]
+    then
+        mkdir ../microservices
+fi
 cd ../microservices
 
 ## FUNCTIONS ##
@@ -25,12 +28,13 @@ wiki()
 
 generate_doc()
 {
-    if [ ! -d "tools" ]
+    if [ ! -d "hooks" ]
         then
-            mkdir tools
+            git config core.hooksPath hooks/
+            mkdir hooks
       fi
-      cp ../../tools/generate_doc.sh tools/
-      chmod u+x tools/generate_doc.sh
+      cp ../../tools/generate_doc.sh hooks/pre-push
+      chmod u+x hooks/pre-push
 }
 
 
