@@ -30,8 +30,8 @@ generate_doc()
 {
     if [ ! -d "hooks" ]
         then
-            git config core.hooksPath hooks/
             mkdir hooks
+            git config core.hooksPath hooks/
       fi
       cp ../../tools/generate_doc.sh hooks/pre-push
       chmod u+x hooks/pre-push
