@@ -4,7 +4,7 @@
 # How to build your amazing coffee machine
 ``` bash
 # Clone this repository
-$ https://github.com/dabops/dabops.git
+$ git clone https://github.com/dabops/dabops.git
 
 # Use our tool for initialization
 # This will fetch all the repository from 'repository.txt'
