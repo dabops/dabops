@@ -21,7 +21,7 @@ $ docker-compose up --build
 Let's see our preparation : [http://mocaccino.docker.localhost](http://mocaccino.docker.localhost)
 
 # How about our infrastructure
-##We are using:
+## We are using:
 
 **Traefik** as a _reverse proxy_\
 **Lumen** as a _API_ (expresso)\
