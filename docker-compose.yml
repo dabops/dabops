@@ -19,6 +19,16 @@ services:
       - "PORT=80"
       - "BASE_URL=expresso.docker.localhost"
 
+  ristretto:
+    build:
+      "./microservices/ristretto"
+    labels:
+      - "traefik.frontend.rule=Host:ristretto.docker.localhost"
+    environment:
+      - "HOST=0.0.0.0"
+      - "PORT=80"
+      - "BASE_URL=expresso.docker.localhost"
+
   expresso:
     build:
       "./microservices/expresso"
